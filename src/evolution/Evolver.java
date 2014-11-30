@@ -1,6 +1,7 @@
 package evolution;
 
 import gameworld.WorldMap;
+import graph.Graph;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,9 +25,9 @@ public class Evolver {
 
 	private static final int GENERATIONS = 72;
 	private static final int POPULATION_SIZE = 25;
-	private static final int CARRY_OVER_POPULATION = 5;
+	private static final int CARRY_OVER_POPULATION = 0;
 	
-	private static final int S = 10;
+	private static final int S = 15;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -35,10 +36,12 @@ public class Evolver {
 	private PriorityQueue<Individual> population1;
 	private PriorityQueue<Individual> population2;
 	private WorldMap map;
-	
 	private Random random;
+	private Graph graph;
 	
 	public Evolver() {
+		
+		graph = new Graph();
 		
 		random = new Random();
 		
@@ -101,6 +104,7 @@ public class Evolver {
 		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
 		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
 
+		graph.updateData(population1, population2, 0);
 		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		
 		// Continue battle for generations to come!!!
@@ -173,6 +177,8 @@ public class Evolver {
 			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
 			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
 			
+			graph.updateData(population1, population2, i);
+			
 			// Show every 10th generation
 			if(i % 10 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
@@ -203,7 +209,7 @@ public class Evolver {
 		});
 	}
 	
-	protected static class Individual {
+	public static class Individual {
 		
 		String name;
 		private Ai ai;

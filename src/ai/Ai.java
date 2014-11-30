@@ -14,7 +14,7 @@ public class Ai {
 
 	public static final int ATTACK_FOV = 90;
 	public static final double ATTACK_RANGE = 20;
-	private static final int ATTACK_RECHARGE = 3;
+	private static final int ATTACK_RECHARGE = 20;
 	
 	private Set<Rule> rules;
 	public Map<Rule, Integer> ruleUseCount;

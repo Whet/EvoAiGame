@@ -152,10 +152,16 @@ public class GUI extends JFrame {
 		drawAiView(dBuffer, ai1, Color.red);
 		drawAiView(dBuffer, ai2, Color.blue);
 		
+		drawScores(g);
+		
 		bufferS.show();
 
 		g.dispose();
 		dBuffer.dispose();
+	}
+
+	private void drawScores(Graphics g) {
+		
 	}
 
 	private void drawAiView(Graphics2D g, Ai ai, Color colour) {
