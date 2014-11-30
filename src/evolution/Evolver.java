@@ -97,9 +97,9 @@ public class Evolver {
 		
 		System.out.println("Generated Initial Population");
 		
-		System.out.println("BATTLE REPORT");
-		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().flagCaps + " frags " + population1.peek().frags + " objFit " + population1.peek().fitness);
-		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().flagCaps + " frags " + population2.peek().frags + " objFit " + population2.peek().fitness);
+		System.out.println("BATTLE REPORT 0");
+		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
+		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
 
 		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		
@@ -170,8 +170,8 @@ public class Evolver {
 			previousPopulation2 = currentPopulation2;
 			
 			System.out.println("BATTLE REPORT " + i);
-			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().flagCaps + " frags " + population1.peek().frags + " objFit " + population1.peek().fitness);
-			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().flagCaps + " frags " + population2.peek().frags + " objFit " + population2.peek().fitness);
+			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
+			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
 			
 			// Show every 10th generation
 			if(i % 10 == 0)
@@ -211,6 +211,11 @@ public class Evolver {
 		public int subjectiveFitness;
 		private int flagCaps;
 		private int frags;
+		private int recordFrags;
+		private int recordFlagCaps;
+		private int gamesPlayed;
+		private int shots;
+		private int recordShots;
 		
 		private String randomName(Random random) {
 			switch(random.nextInt(5)) {
@@ -234,6 +239,11 @@ public class Evolver {
 			this.ai = ai;
 			this.fitness = 0;
 			this.frags = 0;
+			this.recordFlagCaps = 0;
+			this.recordFlagCaps = 0;
+			this.recordShots = 0;
+			this.gamesPlayed = 0;
+			this.shots = 0;
 		}
 		
 		// Indivdual with crossover
@@ -264,6 +274,12 @@ public class Evolver {
 			
 			this.name = randomName(random) + random.nextLong();
 			this.fitness = 0;
+			this.frags = 0;
+			this.recordFlagCaps = 0;
+			this.recordFlagCaps = 0;
+			this.recordShots = 0;
+			this.gamesPlayed = 0;
+			this.shots = 0;
 			
 			this.mutate(random);
 		}
@@ -272,7 +288,7 @@ public class Evolver {
 			return flagCaps;
 		}
 
-		public void setFlagCaps(int flagCaps) {
+		public void addFlagCaps(int flagCaps) {
 			this.flagCaps += flagCaps;
 		}
 		
@@ -322,12 +338,43 @@ public class Evolver {
 			this.fitness = fitness;
 		}
 
-		public void setFrags(int frags) {
+		public void addFrags(int frags) {
 			this.frags += frags;
 		}
 
 		public int getFrags() {
 			return this.frags;
+		}
+
+		public void resetScoring() {
+			this.recordFrags += this.frags;
+			this.recordFlagCaps += this.flagCaps;
+			this.recordShots += this.shots;
+			
+			this.frags = 0;
+			this.flagCaps = 0;
+			this.shots = 0;
+			this.gamesPlayed += 2;
+		}
+		
+		public double getAverageFlagCaptures() {
+			return this.recordFlagCaps / (double)this.gamesPlayed;
+		}
+		
+		public double getAverageFragScore() {
+			return (this.recordFrags / (double)recordShots) / (double)this.gamesPlayed;
+		}
+
+		public void addShots(int shots) {
+			this.shots += shots;
+		}
+
+		public int getShots() {
+			return shots;
+		}
+
+		public double getFragScore() {
+			return this.frags / (double)shots;
 		}
 		
 	}

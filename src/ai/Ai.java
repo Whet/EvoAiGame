@@ -14,6 +14,7 @@ public class Ai {
 
 	public static final int ATTACK_FOV = 90;
 	public static final double ATTACK_RANGE = 20;
+	private static final int ATTACK_RECHARGE = 3;
 	
 	private Set<Rule> rules;
 	public Map<Rule, Integer> ruleUseCount;
@@ -26,6 +27,7 @@ public class Ai {
 	private boolean hasFlag;
 	
 	public WorldMap map;
+	private int recharge;
 	
 	public Ai(WorldMap map) {
 		
@@ -35,6 +37,7 @@ public class Ai {
 		this.y = 0;
 		this.rotation = 0;
 		this.move = 0;
+		this.recharge = 0;
 		
 		this.rules = new HashSet<>();
 		this.ruleUseCount = new HashMap<>();
@@ -95,6 +98,10 @@ public class Ai {
 	}
 	
 	public void act() {
+		
+		if(this.recharge > 0)
+			this.recharge--;
+		
 		move();
 	}
 
@@ -191,8 +198,21 @@ public class Ai {
 	}
 
 	public boolean successfulAttack(Ai target) {
-		return isAttacking() && Maths.getDistance(getX(), getY(), target.getX(), target.getY()) < ATTACK_RANGE &&
-			   Maths.angleDifference(getRotation(), Maths.getDegrees(getX(), getY(), target.getX(), target.getY())) < ATTACK_FOV;
+		
+		boolean b = this.recharge == 0 && isAttacking() && Maths.getDistance(getX(), getY(), target.getX(), target.getY()) < ATTACK_RANGE;
+		
+		if(this.isAttacking() && this.recharge == 0)
+			this.recharge = ATTACK_RECHARGE;
+		
+		return b;
 	}
 
+	public int getRecharge() {
+		return recharge;
+	}
+
+	public void setRecharge(int recharge) {
+		this.recharge = recharge;
+	}
+	
 }
