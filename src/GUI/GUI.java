@@ -56,7 +56,7 @@ public class GUI extends JFrame {
 		
 		map.setAi(ai1, ai2);
 		
-		final Timer aiTimer = new Timer(50, new ActionListener() {
+		final Timer aiTimer = new Timer(250, new ActionListener() {
 
 			int timer = 0;
 			
@@ -221,8 +221,20 @@ public class GUI extends JFrame {
 		
 		g.fillOval((int)xAi - 5, (int)yAi - 5, 10, 10);
 		
-		if(ai.getRecharge() == 0)
-			g.drawOval((int)(xAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(yAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE));
+//		if(ai.getRecharge() == 0) {
+			drawFOV(g, ai);
+//			g.drawOval((int)(xAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(yAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE));
+//		}
+	}
+	
+	private void drawFOV(Graphics2D g, Ai ai) {
+		g.drawLine((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE,
+				   (int)(ai.getX()*DRAW_SCALE + FOV_ARC_LENGTH * Math.cos(ai.getRotation() + Math.toRadians(Ai.ATTACK_FOV) * 0.5)),
+				   (int)(ai.getY()*DRAW_SCALE + FOV_ARC_LENGTH * Math.sin(ai.getRotation() + Math.toRadians(Ai.ATTACK_FOV) * 0.5)));
+		
+		g.drawLine((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE,
+				   (int)(ai.getX()*DRAW_SCALE + FOV_ARC_LENGTH * Math.cos(ai.getRotation() - Math.toRadians(Ai.ATTACK_FOV) * 0.5)),
+				   (int)(ai.getY()*DRAW_SCALE + FOV_ARC_LENGTH * Math.sin(ai.getRotation() - Math.toRadians(Ai.ATTACK_FOV) * 0.5)));
 	}
 
 	private void drawMap(Graphics2D g) {

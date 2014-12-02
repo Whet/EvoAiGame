@@ -199,7 +199,8 @@ public class Ai {
 
 	public boolean successfulAttack(Ai target) {
 		
-		boolean b = this.recharge == 0 && isAttacking() && Maths.getDistance(getX(), getY(), target.getX(), target.getY()) < ATTACK_RANGE;
+		boolean b = this.recharge == 0 && isAttacking() && Maths.getDistance(getX(), getY(), target.getX(), target.getY()) < ATTACK_RANGE && 
+					(Maths.angleDifference(Maths.getDegrees(this.getX(), this.getY(), target.getX(), target.getY()), Math.toDegrees(this.rotation)) <= ATTACK_FOV * 0.5);
 		
 		if(this.isAttacking() && this.recharge == 0)
 			this.recharge = ATTACK_RECHARGE;
