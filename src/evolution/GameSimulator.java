@@ -12,7 +12,7 @@ public class GameSimulator {
 	// 5 mins of gameplay
 //	private static final int MAX_GAME_TURNS = 3000;
 	// 1 min of gameplay
-	private static final int MAX_GAME_TURNS = 600;
+	private static final int MAX_GAME_TURNS = 300;
 	
 	public static void runGame(WorldMap map, Individual individual1, Individual individual2) {
 		
@@ -101,13 +101,14 @@ public class GameSimulator {
 			
 			if(distance < 5 && ai1.hasFlag()) {
 				ai1.setHasFlag(false);
-				ai1FlagCaptures++;
+				ai1FlagCaptures+= 2;
 			}
 			
 			distance = Maths.getDistance(ai1.getX(), ai1.getY(), start2.x, start2.y);
 			
 			if(distance < 5 && !ai1.hasFlag()) {
 				ai1.setHasFlag(true);
+				ai1FlagCaptures++;
 			}
 			
 			if(ai1.isAttacking() && ai1.getRecharge() == 0)
@@ -124,13 +125,14 @@ public class GameSimulator {
 			
 			if(distance < 5 && ai2.hasFlag()) {
 				ai2.setHasFlag(false);
-				ai2FlagCaptures++;
+				ai2FlagCaptures+=2;
 			}
 			
 			distance = Maths.getDistance(ai2.getX(), ai2.getY(), start1.x, start1.y);
 			
 			if(distance < 5 && !ai2.hasFlag()) {
 				ai2.setHasFlag(true);
+				ai2FlagCaptures++;
 			}
 			
 			if(ai2.isAttacking() && ai2.getRecharge() == 0)
