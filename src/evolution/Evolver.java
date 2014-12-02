@@ -141,11 +141,11 @@ public class Evolver {
 			
 			// Add new population by crossover
 			for(int j = CARRY_OVER_POPULATION; j < POPULATION_SIZE; j++) {
-				Individual individual1 = new Individual(previousPopulation1[random.nextInt(previousPopulation1.length)], previousPopulation1[random.nextInt(previousPopulation1.length)], random);
+				Individual individual1 = new Individual(chooseParent(previousPopulation1), chooseParent(previousPopulation1), random);
 				population1.add(individual1);
 				currentPopulation1[j] = individual1;
 				
-				Individual individual2 = new Individual(previousPopulation2[random.nextInt(previousPopulation2.length)], previousPopulation2[random.nextInt(previousPopulation2.length)], random);
+				Individual individual2 = new Individual(chooseParent(previousPopulation2), chooseParent(previousPopulation2), random);
 				population2.add(individual2);
 				currentPopulation2[j] = individual2;
 			}
@@ -183,6 +183,33 @@ public class Evolver {
 			if(i % 10 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
+	}
+
+	private Individual chooseParent(Individual[] previousPopulation) {
+
+		int totalFitness = 0;
+		
+		for(int i = 0; i < previousPopulation.length; i++) {
+			totalFitness += previousPopulation[i].subjectiveFitness + 1;
+		}
+		
+		Individual[] selectionWheel = new Individual[totalFitness];
+		
+		int index = 0;
+		
+		for(int i = 0; i < previousPopulation.length; i++) {
+			
+			Individual individual = previousPopulation[i];
+			for(int j = 0; j < individual.subjectiveFitness + 1; j++) {
+				selectionWheel[index + j] = individual;
+			}
+			
+			index += individual.subjectiveFitness + 1;
+			
+		}
+		
+		return selectionWheel[random.nextInt(selectionWheel.length)];
+		
 	}
 
 	private void openGUI(int generation, Ai ai1, Ai ai2, WorldMap map) {
