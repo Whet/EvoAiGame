@@ -24,7 +24,7 @@ import ai.Ai;
 public class GUI extends JFrame {
 
 	private static final int DRAW_SCALE = 5;
-	private static final int FOV_ARC_LENGTH = (int)(Ai.ATTACK_RANGE/2 * DRAW_SCALE);
+	private static final int FOV_ARC_LENGTH = (int)(Ai.ATTACK_RANGE * DRAW_SCALE);
 	
 	private WorldMap map;
 	final Ai ai1, ai2;
@@ -56,7 +56,7 @@ public class GUI extends JFrame {
 		
 		map.setAi(ai1, ai2);
 		
-		final Timer aiTimer = new Timer(250, new ActionListener() {
+		final Timer aiTimer = new Timer(50, new ActionListener() {
 
 			int timer = 0;
 			
@@ -220,11 +220,13 @@ public class GUI extends JFrame {
 		g.setColor(colour);
 		
 		g.fillOval((int)xAi - 5, (int)yAi - 5, 10, 10);
+
+
+		if(ai.getRecharge() != 0) {
+			g.setColor(Color.yellow);
+		}
 		
-//		if(ai.getRecharge() == 0) {
-			drawFOV(g, ai);
-//			g.drawOval((int)(xAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(yAi - Ai.ATTACK_RANGE/2 * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE), (int)(Ai.ATTACK_RANGE * DRAW_SCALE));
-//		}
+		drawFOV(g, ai);
 	}
 	
 	private void drawFOV(Graphics2D g, Ai ai) {

@@ -12,7 +12,7 @@ public class GameSimulator {
 	// 5 mins of gameplay
 //	private static final int MAX_GAME_TURNS = 3000;
 	// 1 min of gameplay
-	private static final int MAX_GAME_TURNS = 300;
+	private static final int MAX_GAME_TURNS = 600;
 	
 	public static void runGame(WorldMap map, Individual individual1, Individual individual2) {
 		
