@@ -322,7 +322,7 @@ public class Evolver {
 			return flagCaps;
 		}
 
-		public void addFlagCaps(int flagCaps) {
+		public void addFlagScore(int flagCaps) {
 			this.flagCaps += flagCaps;
 		}
 		

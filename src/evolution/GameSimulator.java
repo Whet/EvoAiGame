@@ -53,10 +53,10 @@ public class GameSimulator {
 		int score1 = 0;
 		int score2 = 0;
 		
-		if(individual1.getFlagCaps() > individual2.getFlagCaps()) {
+		if(individual1.getFlagScore() > individual2.getFlagScore()) {
 			score1++;
 		}
-		else if(individual1.getFlagCaps() < individual2.getFlagCaps()) {
+		else if(individual1.getFlagScore() < individual2.getFlagScore()) {
 			score2++;
 		}
 		
@@ -168,11 +168,11 @@ public class GameSimulator {
 			
 		}
 		
-		individual1.addFlagCaps(ai1FlagCaptures);
+		individual1.addFlagScore(ai1FlagCaptures);
 		individual1.addFrags(ai1Frags);
 		individual1.addShots(ai1Shots);
 		
-		individual2.addFlagCaps(ai2FlagCaptures);
+		individual2.addFlagScore(ai2FlagCaptures);
 		individual2.addFrags(ai2Frags);
 		individual2.addShots(ai2Shots);
 	}
