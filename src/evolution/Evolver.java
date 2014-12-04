@@ -23,11 +23,12 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 72;
-	private static final int POPULATION_SIZE = 10;
-	private static final int CARRY_OVER_POPULATION = 3;
+	private static final int GENERATIONS = 1000;
+	private static final int POPULATION_SIZE = 30;
+	private static final int CARRY_OVER_POPULATION = 10;
 	
-	private static final int S = 5;
+	// Number of opponents, each time they play 2 games starting on each side of the map
+	private static final int S = 10;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -101,11 +102,11 @@ public class Evolver {
 		System.out.println("Generated Initial Population");
 		
 		System.out.println("BATTLE REPORT 0");
-		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
-		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
+		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
+		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
 
 		graph.updateData(population1, population2, 0);
-		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+//		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		
 		// Continue battle for generations to come!!!
 		for(int i = 1; i < GENERATIONS; i++) {
@@ -141,11 +142,11 @@ public class Evolver {
 			
 			// Add new population by crossover
 			for(int j = CARRY_OVER_POPULATION; j < POPULATION_SIZE; j++) {
-				Individual individual1 = new Individual(chooseParent(previousPopulation1), chooseParent(previousPopulation1), random);
+				Individual individual1 = new Individual(chooseParent(carryOver1), chooseParent(carryOver1), random);
 				population1.add(individual1);
 				currentPopulation1[j] = individual1;
 				
-				Individual individual2 = new Individual(chooseParent(previousPopulation2), chooseParent(previousPopulation2), random);
+				Individual individual2 = new Individual(chooseParent(carryOver2), chooseParent(carryOver2), random);
 				population2.add(individual2);
 				currentPopulation2[j] = individual2;
 			}
@@ -174,13 +175,13 @@ public class Evolver {
 			previousPopulation2 = currentPopulation2;
 			
 			System.out.println("BATTLE REPORT " + i);
-			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagCaptures() + " frags " + population1.peek().getAverageFragScore());
-			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagCaptures() + " frags " + population2.peek().getAverageFragScore());
+			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
+			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
 			
 			graph.updateData(population1, population2, i);
 			
-			// Show every 10th generation
-			if(i % 10 == 0)
+			// Show cool ppl
+			if(i % 100 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
@@ -273,7 +274,7 @@ public class Evolver {
 			this.fitness = 0;
 			this.frags = 0;
 			this.recordFlagCaps = 0;
-			this.recordFlagCaps = 0;
+			this.recordFrags = 0;
 			this.recordShots = 0;
 			this.gamesPlayed = 0;
 			this.shots = 0;
@@ -309,7 +310,7 @@ public class Evolver {
 			this.fitness = 0;
 			this.frags = 0;
 			this.recordFlagCaps = 0;
-			this.recordFlagCaps = 0;
+			this.recordFrags = 0;
 			this.recordShots = 0;
 			this.gamesPlayed = 0;
 			this.shots = 0;
@@ -317,7 +318,7 @@ public class Evolver {
 			this.mutate(random);
 		}
 
-		public int getFlagCaps() {
+		public int getFlagScore() {
 			return flagCaps;
 		}
 
@@ -390,12 +391,16 @@ public class Evolver {
 			this.gamesPlayed += 2;
 		}
 		
-		public double getAverageFlagCaptures() {
+		public double getAverageFlagScore() {
 			return this.recordFlagCaps / (double)this.gamesPlayed;
 		}
 		
 		public double getAverageFragScore() {
-			return (this.recordFrags / (double)recordShots) / (double)this.gamesPlayed;
+			
+			if(this.recordFrags == 0)
+				return 0;
+			
+			return (this.recordFrags / (double)recordShots);
 		}
 
 		public void addShots(int shots) {

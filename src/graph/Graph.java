@@ -88,7 +88,7 @@ public class Graph {
 		
 		while(iterator.hasNext()) {
 			Individual next = iterator.next();
-			captures1.add(next.getAverageFlagCaptures());
+			captures1.add(next.getAverageFlagScore());
 			frags1.add(next.getAverageFragScore());
 		}
 		
@@ -101,7 +101,7 @@ public class Graph {
 		
 		while(iterator.hasNext()) {
 			Individual next = iterator.next();
-			captures2.add(next.getAverageFlagCaptures());
+			captures2.add(next.getAverageFlagScore());
 			frags2.add(next.getAverageFragScore());
 		}
 		
