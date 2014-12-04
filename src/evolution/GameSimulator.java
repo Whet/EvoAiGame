@@ -39,19 +39,39 @@ public class GameSimulator {
 		// Use different scores for different experiments
 		
 		// Farthest score counts!
-		if(Math.abs(individual1.getFlagCaps() - individual2.getFlagCaps()) > Math.abs(individual1.getFragScore() - individual2.getFragScore())) {
-			if(individual1.getFlagCaps() > individual2.getFlagCaps()) {
-				individual1.subjectiveFitness++;
-			}
+//		if(Math.abs(individual1.getFlagCaps() - individual2.getFlagCaps()) > Math.abs(individual1.getFragScore() - individual2.getFragScore())) {
+//			if(individual1.getFlagCaps() > individual2.getFlagCaps()) {
+//				individual1.subjectiveFitness++;
+//			}
+//		}
+//		else {
+//			if(individual1.getFragScore() > individual2.getFragScore()) {
+//				individual1.subjectiveFitness++;
+//			}
+//		}
+		
+		int score1 = 0;
+		int score2 = 0;
+		
+		if(individual1.getFlagCaps() > individual2.getFlagCaps()) {
+			score1++;
 		}
-		else {
-			if(individual1.getFragScore() > individual2.getFragScore()) {
-				individual1.subjectiveFitness++;
-			}
+		else if(individual1.getFlagCaps() < individual2.getFlagCaps()) {
+			score2++;
+		}
+		
+		if(individual1.getFrags() > individual2.getFrags()) {
+			score1++;
+		}
+		else if(individual1.getFrags() < individual2.getFrags()) {
+			score2++;
 		}
 		
 		individual1.resetScoring();
 		individual2.resetScoring();
+		
+		if(score1 > score2)
+			individual1.subjectiveFitness++;
 	}
 
 	private static void runSubGame(WorldMap map, Individual individual1, Individual individual2) {

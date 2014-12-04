@@ -17,7 +17,19 @@ public enum WorldStates {
 	}
 
 	public static WorldStates random(Random random) {
-		return values()[random.nextInt(values().length)];
+		if(random.nextBoolean())
+			return EMPTY;
+		return OCCUPIED;
+	}
+
+	public static WorldStates getState(int i) {
+
+		for(WorldStates worldState:values()) {
+			if(worldState.getCode() == i)
+				return worldState;
+		}
+		
+		return null;
 	}
 
 }

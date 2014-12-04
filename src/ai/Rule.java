@@ -49,11 +49,17 @@ public class Rule {
 		
 		for(int i = 0; i < this.worldViewRequirement.length; i++) {
 			for(int j = 0; j < this.worldViewRequirement.length; j++) {
-//				if(Math.random() < WORLD_VIEW_MUTATION_RATE) {
-					this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
-//				}
+				this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
 			}
 		}
+		
+		// Chance to add an enemy
+		if(random.nextDouble() < WORLD_VIEW_MUTATION_RATE)
+			this.worldViewRequirement[random.nextInt(this.worldViewRequirement.length)][random.nextInt(this.worldViewRequirement[0].length)] = WorldStates.ENEMY.getCode();
+		
+		if(random.nextDouble() < WORLD_VIEW_MUTATION_RATE)
+			this.worldViewRequirement[random.nextInt(this.worldViewRequirement.length)][random.nextInt(this.worldViewRequirement[0].length)] = WorldStates.FLAG.getCode();
+		
 	}
 	
 	public void mutate(Random random) {
@@ -73,7 +79,98 @@ public class Rule {
 		for(int i = 0; i < this.worldViewRequirement.length; i++) {
 			for(int j = 0; j < this.worldViewRequirement.length; j++) {
 				if(Math.random() < WORLD_VIEW_MUTATION_RATE) {
-					this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+					WorldStates currentState = WorldStates.getState(this.worldViewRequirement[i][j]);
+					
+					if(currentState == WorldStates.EMPTY)
+						this.worldViewRequirement[i][j] = WorldStates.OCCUPIED.getCode();
+					else if(currentState == WorldStates.OCCUPIED)
+						this.worldViewRequirement[i][j] = WorldStates.EMPTY.getCode();
+					else if(currentState == WorldStates.FLAG) {
+						// Move flag to an adjacent square
+						
+						// Starting west and moving clockwise
+						int[] options = new int[]{1,2,3,4};
+						
+						if(i == 0 || this.worldViewRequirement[i - 1][j] == WorldStates.ENEMY.getCode())
+							options[0] = 0;
+						if(j == 0 || this.worldViewRequirement[i][j - 1] == WorldStates.ENEMY.getCode())
+							options[1] = 0;
+						if(i + 1 == this.worldViewRequirement.length || this.worldViewRequirement[i + 1][j] == WorldStates.ENEMY.getCode())
+							options[2] = 0;
+						if(j + 1 == this.worldViewRequirement.length || this.worldViewRequirement[i][j + 1] == WorldStates.ENEMY.getCode())
+							options[3] = 0;
+						
+						// If can't move mutation then leave it
+						if(options[0] == 0 && options[1] == 0 && options[2] == 0 && options[3] == 0)
+							return;
+						
+						int index = 0;
+						do {
+							index =  random.nextInt(options.length);
+						}while(options[index] == 0);
+						
+						if(index == 0) {
+							this.worldViewRequirement[i - 1][j] = WorldStates.FLAG.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else if(index == 1) {
+							this.worldViewRequirement[i][j - 1] = WorldStates.FLAG.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else if(index == 2) {
+							this.worldViewRequirement[i + 1][j] = WorldStates.FLAG.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else {
+							this.worldViewRequirement[i][j + 1] = WorldStates.FLAG.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						
+						// Don't keep mutating
+						return;
+					}
+					else if(currentState == WorldStates.ENEMY) {
+						// Starting west and moving clockwise
+						int[] options = new int[]{1,2,3,4};
+						
+						if(i == 0 || this.worldViewRequirement[i - 1][j] == WorldStates.FLAG.getCode())
+							options[0] = 0;
+						if(j == 0 || this.worldViewRequirement[i][j - 1] == WorldStates.FLAG.getCode())
+							options[1] = 0;
+						if(i + 1 == this.worldViewRequirement.length || this.worldViewRequirement[i + 1][j] == WorldStates.FLAG.getCode())
+							options[2] = 0;
+						if(j + 1 == this.worldViewRequirement.length || this.worldViewRequirement[i][j + 1] == WorldStates.FLAG.getCode())
+							options[3] = 0;
+						
+						// If can't move mutation then leave it
+						if(options[0] == 0 && options[1] == 0 && options[2] == 0 && options[3] == 0)
+							return;
+						
+						int index = 0;
+						do {
+							index =  random.nextInt(options.length);
+						}while(options[index] == 0);
+						
+						if(index == 0) {
+							this.worldViewRequirement[i - 1][j] = WorldStates.ENEMY.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else if(index == 1) {
+							this.worldViewRequirement[i][j - 1] = WorldStates.ENEMY.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else if(index == 2) {
+							this.worldViewRequirement[i + 1][j] = WorldStates.ENEMY.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						else {
+							this.worldViewRequirement[i][j + 1] = WorldStates.ENEMY.getCode();
+							this.worldViewRequirement[i][j] = WorldStates.random(random).getCode();
+						}
+						
+						// Don't keep mutating
+						return;
+					}
 				}
 			}
 		}
