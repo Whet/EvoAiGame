@@ -138,6 +138,7 @@ public class GameSimulator {
 				ai1Frags++;
 				ai2.setX(start2.x);
 				ai2.setY(start2.y);
+				ai2.setHasFlag(false);
 			}
 
 			// Ai 2 fitness
@@ -162,6 +163,7 @@ public class GameSimulator {
 				ai2Frags++;
 				ai1.setX(start1.x);
 				ai1.setY(start1.y);
+				ai1.setHasFlag(false);
 			}
 			
 		}
