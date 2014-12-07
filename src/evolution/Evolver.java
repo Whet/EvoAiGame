@@ -23,11 +23,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 50;
+	private static final int GENERATIONS = 200;
 	private static final int POPULATION_SIZE = 50;
 	private static final int CARRY_OVER_POPULATION = 2;
 	
-	private static final int S = 20;
+	private static final int S = 35;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -243,8 +243,8 @@ public class Evolver {
 			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-			if(i % 20 == 0)
-				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+//			if(i % 20 == 0)
+//				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
 
@@ -450,7 +450,7 @@ public class Evolver {
 			this.frags = 0;
 			this.flagCaps = 0;
 			this.shots = 0;
-			this.gamesPlayed += 2;
+			this.gamesPlayed ++;
 		}
 		
 		public double getAverageFlagScore() {

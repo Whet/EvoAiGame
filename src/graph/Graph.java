@@ -50,25 +50,23 @@ public class Graph {
 		this.captureScore2.add(0.0);
 		this.time.add(0);
 		
-		Chart chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+		Chart chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).build();
 	    chart.getStyleManager().setChartType(ChartType.Scatter);
-	    chart.getStyleManager().setChartTitleVisible(false);
-	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
 	    chart.getStyleManager().setMarkerSize(5);
+	    chart.getStyleManager().setLegendVisible(false);
 	    
 	    chart.addSeries(POPULATION_1_FRAGS, fragScore1, fragScore1);
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
-		chart.setChartTitle("Population 2 Frags");
+		chart.setChartTitle("Population 1 Frags");
 		
 		killGraph1 = new XChartPanel(chart);
 		
-		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).build();
 	    chart.getStyleManager().setChartType(ChartType.Scatter);
-	    chart.getStyleManager().setChartTitleVisible(false);
-	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
 	    chart.getStyleManager().setMarkerSize(5);
+	    chart.getStyleManager().setLegendVisible(false);
 	    
 		chart.addSeries(POPULATION_1_CAPTURES, captureScore1, captureScore1);
 		
@@ -78,11 +76,10 @@ public class Graph {
 		
 		flagGraph1 = new XChartPanel(chart);
 		
-		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).build();
 	    chart.getStyleManager().setChartType(ChartType.Scatter);
-	    chart.getStyleManager().setChartTitleVisible(false);
-	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
 	    chart.getStyleManager().setMarkerSize(5);
+	    chart.getStyleManager().setLegendVisible(false);
 	    
 		chart.addSeries(POPULATION_2_FRAGS, fragScore2, fragScore2);
 		
@@ -92,11 +89,10 @@ public class Graph {
 		
 		killGraph2 = new XChartPanel(chart);
 		
-		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).build();
 	    chart.getStyleManager().setChartType(ChartType.Scatter);
-	    chart.getStyleManager().setChartTitleVisible(false);
-	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
 	    chart.getStyleManager().setMarkerSize(5);
+	    chart.getStyleManager().setLegendVisible(false);
 	    
 		chart.addSeries(POPULATION_2_CAPTURES, captureScore2, captureScore2);
 		
