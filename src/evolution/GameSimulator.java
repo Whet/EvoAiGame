@@ -9,44 +9,47 @@ import gameworld.WorldMap;
 
 public class GameSimulator {
 
-	// 5 mins of gameplay
-//	private static final int MAX_GAME_TURNS = 3000;
+	// 20 turns a second
 	// 1 min of gameplay
-	private static final int MAX_GAME_TURNS = 600;
+	private static final int MAX_GAME_TURNS = 1200;
+	// 30 secs of gameplay
+//	private static final int MAX_GAME_TURNS = 600;
 	
-	public static void runGame(WorldMap map, Individual individual1, Individual individual2) {
+	public static int runGame(WorldMap map, Individual individual1, Individual individual2) {
 		
 		// Get average score between both starts
-		double individual1Score = 0;
-		double individual2Score = 0;
+//		double individual1Score = 0;
+//		double individual2Score = 0;
 		
 		map.setAi(individual1.getAi(), individual2.getAi());
 		
 		runSubGame(map, individual1, individual2);
 		
-		individual1Score = individual1.getFitness();
-		individual2Score = individual2.getFitness();
-		
-		runSubGame(map, individual2, individual1);
-		
-		individual1.setFitness(individual1Score + individual1.getFitness());
-		individual2.setFitness(individual2Score + individual2.getFitness());
-		
-		individual1.setFitness(individual1.getFitness() / 2.0);
-		individual2.setFitness(individual2.getFitness() / 2.0);
+//		individual1Score = individual1.getFitness();
+//		individual2Score = individual2.getFitness();
+//		
+//		runSubGame(map, individual2, individual1);
+//		
+//		individual1.setFitness(individual1Score + individual1.getFitness());
+//		individual2.setFitness(individual2Score + individual2.getFitness());
+//		
+//		individual1.setFitness(individual1.getFitness() / 2.0);
+//		individual2.setFitness(individual2.getFitness() / 2.0);
 		
 		
 		// Use different scores for different experiments
 		
 		// Farthest score counts!
-//		if(Math.abs(individual1.getFlagCaps() - individual2.getFlagCaps()) > Math.abs(individual1.getFragScore() - individual2.getFragScore())) {
-//			if(individual1.getFlagCaps() > individual2.getFlagCaps()) {
+//		if(Math.abs(individual1.getFlagScore() - individual2.getFlagScore()) > Math.abs(individual1.getKillScore() - individual2.getKillScore())) {
+//			if(individual1.getFlagScore() > individual2.getFlagScore()) {
 //				individual1.subjectiveFitness++;
+//				return 1;
 //			}
 //		}
 //		else {
-//			if(individual1.getFragScore() > individual2.getFragScore()) {
+//			if(individual1.getKillScore() > individual2.getKillScore()) {
 //				individual1.subjectiveFitness++;
+//				return 1;
 //			}
 //		}
 		
@@ -60,10 +63,10 @@ public class GameSimulator {
 			score2++;
 		}
 		
-		if(individual1.getFrags() > individual2.getFrags()) {
+		if(individual1.getKillScore() > individual2.getKillScore()) {
 			score1++;
 		}
-		else if(individual1.getFrags() < individual2.getFrags()) {
+		else if(individual1.getKillScore() < individual2.getKillScore()) {
 			score2++;
 		}
 		
@@ -72,6 +75,8 @@ public class GameSimulator {
 		
 		if(score1 > score2)
 			individual1.subjectiveFitness++;
+		
+		return 0;
 	}
 
 	private static void runSubGame(WorldMap map, Individual individual1, Individual individual2) {

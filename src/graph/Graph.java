@@ -1,5 +1,7 @@
 package graph;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +31,10 @@ public class Graph {
 	private List<Double> captureScore2;
 	private List<Integer> time;
 	
-	private XChartPanel chartPanel;
+	private XChartPanel killGraph1;
+	private XChartPanel flagGraph1;
+	private XChartPanel killGraph2;
+	private XChartPanel flagGraph2;
 	
 	public Graph() {
 		
@@ -52,14 +57,54 @@ public class Graph {
 	    chart.getStyleManager().setMarkerSize(5);
 	    
 	    chart.addSeries(POPULATION_1_FRAGS, fragScore1, fragScore1);
+		
+		chart.setXAxisTitle("Generations");
+		chart.setYAxisTitle("Score");
+		chart.setChartTitle("Population 2 Frags");
+		
+		killGraph1 = new XChartPanel(chart);
+		
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+	    chart.getStyleManager().setChartType(ChartType.Scatter);
+	    chart.getStyleManager().setChartTitleVisible(false);
+	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
+	    chart.getStyleManager().setMarkerSize(5);
+	    
 		chart.addSeries(POPULATION_1_CAPTURES, captureScore1, captureScore1);
+		
+		chart.setXAxisTitle("Generations");
+		chart.setYAxisTitle("Score");
+		chart.setChartTitle("Population 1 Flag Captures");
+		
+		flagGraph1 = new XChartPanel(chart);
+		
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+	    chart.getStyleManager().setChartType(ChartType.Scatter);
+	    chart.getStyleManager().setChartTitleVisible(false);
+	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
+	    chart.getStyleManager().setMarkerSize(5);
+	    
 		chart.addSeries(POPULATION_2_FRAGS, fragScore2, fragScore2);
+		
+		chart.setXAxisTitle("Generations");
+		chart.setYAxisTitle("Score");
+		chart.setChartTitle("Population 2 Frags");
+		
+		killGraph2 = new XChartPanel(chart);
+		
+		chart = new ChartBuilder().width(800).height(400).theme(ChartTheme.Matlab).title("Matlab Theme").xAxisTitle("Generations").yAxisTitle("Subjective Fitness").build();
+	    chart.getStyleManager().setChartType(ChartType.Scatter);
+	    chart.getStyleManager().setChartTitleVisible(false);
+	    chart.getStyleManager().setLegendPosition(LegendPosition.OutsideE);
+	    chart.getStyleManager().setMarkerSize(5);
+	    
 		chart.addSeries(POPULATION_2_CAPTURES, captureScore2, captureScore2);
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
+		chart.setChartTitle("Population 2 Flag Captures");
 		
-		chartPanel = new XChartPanel(chart);
+		flagGraph2 = new XChartPanel(chart);
 		
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
@@ -71,7 +116,11 @@ public class Graph {
 				// Create and set up the window.
 				JFrame frame = new JFrame("Genetic Data");
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				frame.add(chartPanel);
+				frame.setLayout(new GridLayout(2, 2));
+				frame.add(killGraph1);
+				frame.add(flagGraph1);
+				frame.add(killGraph2);
+				frame.add(flagGraph2);
 
 				// Display the window.
 				frame.pack();
@@ -112,10 +161,10 @@ public class Graph {
 			this.time.add(generation);
 		}
 		
-		chartPanel.updateSeries(POPULATION_1_FRAGS, this.time, getFragData1());
-		chartPanel.updateSeries(POPULATION_1_CAPTURES, this.time, getFlagData1());
-		chartPanel.updateSeries(POPULATION_2_FRAGS, this.time, getFragData2());
-		chartPanel.updateSeries(POPULATION_2_CAPTURES, this.time, getFlagData2());
+		killGraph1.updateSeries(POPULATION_1_FRAGS, this.time, getFragData1());
+		flagGraph1.updateSeries(POPULATION_1_CAPTURES, this.time, getFlagData1());
+		killGraph2.updateSeries(POPULATION_2_FRAGS, this.time, getFragData2());
+		flagGraph2.updateSeries(POPULATION_2_CAPTURES, this.time, getFlagData2());
 
 	}
 

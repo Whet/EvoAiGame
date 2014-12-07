@@ -43,8 +43,6 @@ public class Rule {
 		this.movement = MovementRule.getRule(random.nextInt(3) - 1);
 		this.rotation = RotationRule.getRule(random.nextInt(3) - 1);
 		
-		this.attacking = AttackRule.getRule(random.nextInt(2));
-		
 		this.phi += Math.toRadians(random.nextInt(90)) * Maths.POM();
 		
 		for(int i = 0; i < this.worldViewRequirement.length; i++) {
@@ -60,7 +58,32 @@ public class Rule {
 		if(random.nextDouble() < WORLD_VIEW_MUTATION_RATE)
 			this.worldViewRequirement[random.nextInt(this.worldViewRequirement.length)][random.nextInt(this.worldViewRequirement[0].length)] = WorldStates.FLAG.getCode();
 		
+		if(hasEnemyTile())
+			this.attacking = AttackRule.getRule(random.nextInt(2));
+		else
+			this.attacking = AttackRule.NO_ATTACK;
 	}
+	
+	private boolean hasEnemyTile() {
+		for(int i = 0; i < this.worldViewRequirement.length; i++) {
+			for(int j = 0; j < this.worldViewRequirement.length; j++) {
+				if(this.worldViewRequirement[i][j] == WorldStates.ENEMY.getCode())
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasFlagTile() {
+		for(int i = 0; i < this.worldViewRequirement.length; i++) {
+			for(int j = 0; j < this.worldViewRequirement.length; j++) {
+				if(this.worldViewRequirement[i][j] == WorldStates.FLAG.getCode())
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	public void mutate(Random random) {
 		if(random.nextDouble() < MOVEMENT_MUTATION) {
@@ -70,11 +93,17 @@ public class Rule {
 			this.rotation = RotationRule.getRule(random.nextInt(3) - 1);
 		}
 		if(random.nextDouble() < ATTACKING_MUTATION) {
-			this.attacking = AttackRule.getRule(2);
+			if(hasEnemyTile())
+				this.attacking = AttackRule.getRule(random.nextInt(2));
+			else
+				this.attacking = AttackRule.NO_ATTACK;
 		}
 		if(random.nextDouble() < ROTATION_AMOUNT_MUTATION) {
 			this.phi += Math.toRadians(random.nextInt(ROTATION_AMOUNT_MUTATION_QUANTITY)) * Maths.POM();
 		}
+		
+		boolean hasFlagTile = hasFlagTile();
+		boolean hasEnemyTile = hasEnemyTile();
 		
 		for(int i = 0; i < this.worldViewRequirement.length; i++) {
 			for(int j = 0; j < this.worldViewRequirement.length; j++) {
@@ -172,6 +201,13 @@ public class Rule {
 						return;
 					}
 				}
+				// Chance to create a flag or enemy if one isn't present
+				else if(Math.random() < WORLD_VIEW_MUTATION_RATE) {
+					if(!hasEnemyTile)
+						this.worldViewRequirement[i][j] = WorldStates.ENEMY.getCode();
+					else if(!hasFlagTile)
+						this.worldViewRequirement[i][j] = WorldStates.FLAG.getCode();
+				}
 			}
 		}
 	}
@@ -193,6 +229,9 @@ public class Rule {
 		ai.rotate(rotation, phi);
 		ai.moveDirection(movement);
 		ai.attack(attacking);
+		
+		if(!this.hasEnemyTile() && this.attacking.getCode() == 1)
+			System.out.println();
 	}
 	
 	public Rule copy() {

@@ -23,12 +23,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 1000;
-	private static final int POPULATION_SIZE = 30;
-	private static final int CARRY_OVER_POPULATION = 10;
+	private static final int GENERATIONS = 50;
+	private static final int POPULATION_SIZE = 50;
+	private static final int CARRY_OVER_POPULATION = 2;
 	
-	// Number of opponents, each time they play 2 games starting on each side of the map
-	private static final int S = 10;
+	private static final int S = 20;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -40,7 +39,13 @@ public class Evolver {
 	private Random random;
 	private Graph graph;
 	
+	private Individual[] champions1;
+	private Individual[] champions2;
+	
 	public Evolver() {
+		
+		champions1 = new Individual[GENERATIONS];
+		champions2 = new Individual[GENERATIONS];
 		
 		graph = new Graph();
 		
@@ -51,8 +56,59 @@ public class Evolver {
 		runEvolution();
 		
 		openGUI(GENERATIONS, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+		
+		fightChampions();
 	}
 	
+	private void fightChampions() {
+		Individual champion1 = champions1[GENERATIONS - 1];
+		Individual champion2 = champions2[GENERATIONS - 1];
+		
+		int winCount = 0;
+		int matchCount = 0;
+		
+		System.out.println("Champion 1");
+		for(int i = 0; i < champions1.length - 1; i++) {
+			matchCount++;
+			if(GameSimulator.runGame(map, champion1, champions1[i]) == 1)
+				winCount++;
+			else
+				System.out.println("Champion 1 lost against generation " + i);
+		}
+		for(int i = 0; i < champions2.length; i++) {
+			matchCount++;
+			if(GameSimulator.runGame(map, champion1, champions2[i]) == 1)
+				winCount++;
+			else
+				System.out.println("Champion 1 lost against population 2 generation " + i);
+		}
+		
+		System.out.println("Champion 1 total wins: " + winCount + " out of " + matchCount);
+		
+		
+		winCount = 0;
+		matchCount = 0;
+		
+		System.out.println("Champion 2");
+		for(int i = 0; i < champions2.length - 1; i++) {
+			matchCount++;
+			if(GameSimulator.runGame(map, champion2, champions2[i]) == 1)
+				winCount++;
+			else
+				System.out.println("Champion 2 lost against generation " + i);
+		}
+		for(int i = 0; i < champions1.length; i++) {
+			matchCount++;
+			if(GameSimulator.runGame(map, champion2, champions1[i]) == 1)
+				winCount++;
+			else
+				System.out.println("Champion 2 lost against population 1 generation " + i);
+		}
+		
+		System.out.println("Champion 2 total wins: " + winCount + " out of " + matchCount);
+		
+	}
+
 	private void runCompetition(Individual ind1, PriorityQueue<Individual> competitionPop) {
 		
 		List<Individual> competitors = new ArrayList<>(competitionPop);
@@ -107,6 +163,9 @@ public class Evolver {
 
 		graph.updateData(population1, population2, 0);
 //		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+
+		champions1[0] = population1.peek();
+		champions2[0] = population2.peek();
 		
 		// Continue battle for generations to come!!!
 		for(int i = 1; i < GENERATIONS; i++) {
@@ -128,20 +187,20 @@ public class Evolver {
 			currentPopulation2 = new Individual[POPULATION_SIZE];
 			
 			// Add carry over population
-			for(int j = 0; j < CARRY_OVER_POPULATION; j++) {
-				Individual individual1 = new Individual(carryOver1[j].getAiCopy(), random);
-				individual1.name = carryOver1[j].name;
-				currentPopulation1[j] = individual1;
-				population1.add(individual1);
-				
-				Individual individual2 = new Individual(carryOver2[j].getAiCopy(), random);
-				individual2.name = carryOver2[j].name;
-				currentPopulation2[j] = individual2;
-				population2.add(individual2);
-			}
+//			for(int j = 0; j < CARRY_OVER_POPULATION; j++) {
+//				Individual individual1 = new Individual(carryOver1[j].getAiCopy(), random);
+//				individual1.name = carryOver1[j].name;
+//				currentPopulation1[j] = individual1;
+//				population1.add(individual1);
+//				
+//				Individual individual2 = new Individual(carryOver2[j].getAiCopy(), random);
+//				individual2.name = carryOver2[j].name;
+//				currentPopulation2[j] = individual2;
+//				population2.add(individual2);
+//			}
 			
 			// Add new population by crossover
-			for(int j = CARRY_OVER_POPULATION; j < POPULATION_SIZE; j++) {
+			for(int j = 0; j < POPULATION_SIZE; j++) {
 				Individual individual1 = new Individual(chooseParent(carryOver1), chooseParent(carryOver1), random);
 				population1.add(individual1);
 				currentPopulation1[j] = individual1;
@@ -178,10 +237,13 @@ public class Evolver {
 			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
 			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
 			
+			champions1[i] = population1.peek();
+			champions2[i] = population2.peek();
+			
 			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-			if(i % 100 == 0)
+			if(i % 20 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
@@ -398,9 +460,9 @@ public class Evolver {
 		public double getAverageFragScore() {
 			
 			if(this.recordFrags == 0)
-				return 0;
+				return -0;
 			
-			return (this.recordFrags / (double)recordShots);
+			return this.recordFrags/ (double)this.gamesPlayed;
 		}
 
 		public void addShots(int shots) {
@@ -411,8 +473,12 @@ public class Evolver {
 			return shots;
 		}
 
-		public double getFragScore() {
-			return this.frags / (double)shots;
+		public double getKillScore() {
+			
+			if(this.frags == 0)
+				return -0;
+			
+			return this.frags;
 		}
 		
 	}
