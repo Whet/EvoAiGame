@@ -216,10 +216,12 @@ public class Ai {
 
 	public boolean attack(Ai target) {
 		
-		if(this.isAttacking() && this.recharge == 0)
+		boolean couldAttack = this.isAttacking() && this.recharge == 0;
+		
+		if(couldAttack)
 			this.recharge = ATTACK_RECHARGE;
 		
-		return this.isAttacking() && this.recharge == 0 && isOnTarget(target);
+		return couldAttack && isOnTarget(target);
 	}
 
 	public int getRecharge() {

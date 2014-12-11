@@ -124,9 +124,6 @@ public class Evolver {
 		Individual[] currentPopulation1 = new Individual[POPULATION_SIZE];
 		Individual[] currentPopulation2 = new Individual[POPULATION_SIZE];
 		
-		Individual[] previousPopulation1;
-		Individual[] previousPopulation2;
-		
 		population1 = new GeneticQueue();
 		population2 = new GeneticQueue();
 		
@@ -152,9 +149,6 @@ public class Evolver {
 			runCompetition(currentPopulation1[i], population2);
 			runCompetition(currentPopulation2[i], population1);
 		}
-		
-		previousPopulation1 = currentPopulation1;
-		previousPopulation2 = currentPopulation2;
 		
 		System.out.println("Generated Initial Population");
 		
@@ -230,9 +224,6 @@ public class Evolver {
 				population1.add(ind1.get(k));
 				population2.add(ind2.get(k));
 			}
-			
-			previousPopulation1 = currentPopulation1;
-			previousPopulation2 = currentPopulation2;
 			
 			System.out.println("BATTLE REPORT " + i);
 			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
