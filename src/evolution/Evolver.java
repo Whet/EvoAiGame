@@ -25,10 +25,10 @@ import ai.Rule;
 public class Evolver {
 
 	private static final int GENERATIONS = 1000;
-	private static final int POPULATION_SIZE = 50;
+	private static final int POPULATION_SIZE = 30;
 	private static final int CARRY_OVER_POPULATION = 5;
 	
-	private static final int S = 50;
+	private static final int S = 20;
 	
 	public static void main(String[] args) {
 		new Evolver();
