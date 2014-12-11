@@ -2,6 +2,7 @@ package ai;
 
 import gameworld.WorldMap;
 
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,7 +15,11 @@ public class Ai {
 
 	public static final int ATTACK_FOV = 90;
 	public static final double ATTACK_RANGE = 10;
+	
 	private static final int ATTACK_RECHARGE = 3;
+	public static final int MAX_HEALTH = 100;
+	
+	private static final int DAMAGE = 25;
 	
 	private Set<Rule> rules;
 	public Map<Rule, Integer> ruleUseCount;
@@ -22,12 +27,16 @@ public class Ai {
 	private double x, y;
 	private double rotation;
 	private int move;
+	private int health;
 	
 	private boolean isAttacking;
 	private boolean hasFlag;
 	
 	public WorldMap map;
 	private int recharge;
+	
+	private Point spawn;
+	private double spawnAngle;
 	
 	public Ai(WorldMap map) {
 		
@@ -196,16 +205,21 @@ public class Ai {
 	public void setRotation(double phi) {
 		this.rotation = phi;
 	}
-
-	public boolean successfulAttack(Ai target) {
+	
+	public boolean isOnTarget(Ai target) {
 		
 		boolean b = this.recharge == 0 && isAttacking() && Maths.getDistance(getX(), getY(), target.getX(), target.getY()) < ATTACK_RANGE && 
 					(Maths.angleDifference(Maths.getDegrees(this.getX(), this.getY(), target.getX(), target.getY()), Math.toDegrees(this.rotation)) <= ATTACK_FOV * 0.5);
 		
+		return b;
+	}
+
+	public boolean attack(Ai target) {
+		
 		if(this.isAttacking() && this.recharge == 0)
 			this.recharge = ATTACK_RECHARGE;
 		
-		return b;
+		return this.isAttacking() && this.recharge == 0 && isOnTarget(target);
 	}
 
 	public int getRecharge() {
@@ -214,6 +228,40 @@ public class Ai {
 
 	public void setRecharge(int recharge) {
 		this.recharge = recharge;
+	}
+	
+	public void hit(int damage) {
+		this.health -= damage;
+		
+		if(this.isDead()) {
+			this.respawn();
+		}
+	}
+	
+	public boolean isDead() {
+		return this.health <= 0;
+	}
+
+	public int getDamage() {
+		return DAMAGE;
+	}
+	
+	public int getHealth() {
+		return this.health;
+	}
+
+	public void setSpawn(Point spawn, double angle) {
+		this.spawn = spawn;
+		this.spawnAngle = angle;
+	}
+
+	public void respawn() {
+		this.setX(spawn.x);
+		this.setY(spawn.y);
+		this.setRotation(spawnAngle);
+		this.setHasFlag(false);
+		this.recharge = 0;
+		this.health = MAX_HEALTH;
 	}
 	
 }

@@ -59,7 +59,7 @@ public class Graph {
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
-		chart.setChartTitle("Population 1 Frags");
+		chart.setChartTitle("Population 1 Damage Score");
 		
 		killGraph1 = new XChartPanel(chart);
 		
@@ -85,7 +85,7 @@ public class Graph {
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
-		chart.setChartTitle("Population 2 Frags");
+		chart.setChartTitle("Population 2 Damage Score");
 		
 		killGraph2 = new XChartPanel(chart);
 		

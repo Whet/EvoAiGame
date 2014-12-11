@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
@@ -23,11 +24,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 200;
+	private static final int GENERATIONS = 1000;
 	private static final int POPULATION_SIZE = 50;
-	private static final int CARRY_OVER_POPULATION = 2;
+	private static final int CARRY_OVER_POPULATION = 5;
 	
-	private static final int S = 35;
+	private static final int S = 50;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -162,7 +163,7 @@ public class Evolver {
 		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
 
 		graph.updateData(population1, population2, 0);
-//		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 
 		champions1[0] = population1.peek();
 		champions2[0] = population2.peek();
@@ -240,11 +241,30 @@ public class Evolver {
 			champions1[i] = population1.peek();
 			champions2[i] = population2.peek();
 			
+			int mean1 = 0;
+			for(Individual individual:population1) {
+				for(Entry<Rule, Integer> ruleEntry:individual.getAi().ruleUseCount.entrySet()) {
+					if(ruleEntry.getValue() > 0)
+						mean1 ++;
+				}
+			}
+			mean1 /= population1.size();
+			int mean2 = 0;
+			for(Individual individual:population2) {
+				for(Entry<Rule, Integer> ruleEntry:individual.getAi().ruleUseCount.entrySet()) {
+					if(ruleEntry.getValue() > 0)
+						mean2 ++;
+				}
+			}
+			mean2 /= population2.size();
+			
+			System.out.println("Mean rules used population 1 " + mean1 + "   Mean rules used population 2 " + mean2);
+			
 			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-//			if(i % 20 == 0)
-//				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+			if(i % 100 == 0)
+				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
 
@@ -347,7 +367,7 @@ public class Evolver {
 			
 			this.ai = new Ai(individual.ai.map);
 			
-			int rules = 100;
+			int rules = 50;
 			
 			List<Rule> rules1 = new ArrayList<>(individual.ai.getRules());
 			List<Rule> rules2 = new ArrayList<>(individual2.ai.getRules());
@@ -434,11 +454,11 @@ public class Evolver {
 			this.fitness = fitness;
 		}
 
-		public void addFrags(int frags) {
+		public void addCombatScore(int frags) {
 			this.frags += frags;
 		}
 
-		public int getFrags() {
+		public int getCombatScore() {
 			return this.frags;
 		}
 

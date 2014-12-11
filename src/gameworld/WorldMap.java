@@ -7,7 +7,7 @@ import ai.Ai;
 
 public class WorldMap {
 
-	public static final int VIEW_SIZE = 15;
+	public static final int VIEW_SIZE = 20;
 	public WorldStates[][] worldBlocks;
 
 	private Point flag1, flag2;

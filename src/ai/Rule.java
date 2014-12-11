@@ -58,10 +58,7 @@ public class Rule {
 		if(random.nextDouble() < WORLD_VIEW_MUTATION_RATE)
 			this.worldViewRequirement[random.nextInt(this.worldViewRequirement.length)][random.nextInt(this.worldViewRequirement[0].length)] = WorldStates.FLAG.getCode();
 		
-		if(hasEnemyTile())
-			this.attacking = AttackRule.getRule(random.nextInt(2));
-		else
-			this.attacking = AttackRule.NO_ATTACK;
+		this.attacking = AttackRule.getRule(random.nextInt(2));
 	}
 	
 	private boolean hasEnemyTile() {
@@ -93,10 +90,7 @@ public class Rule {
 			this.rotation = RotationRule.getRule(random.nextInt(3) - 1);
 		}
 		if(random.nextDouble() < ATTACKING_MUTATION) {
-			if(hasEnemyTile())
-				this.attacking = AttackRule.getRule(random.nextInt(2));
-			else
-				this.attacking = AttackRule.NO_ATTACK;
+			this.attacking = AttackRule.getRule(random.nextInt(2));
 		}
 		if(random.nextDouble() < ROTATION_AMOUNT_MUTATION) {
 			this.phi += Math.toRadians(random.nextInt(ROTATION_AMOUNT_MUTATION_QUANTITY)) * Maths.POM();
@@ -229,9 +223,6 @@ public class Rule {
 		ai.rotate(rotation, phi);
 		ai.moveDirection(movement);
 		ai.attack(attacking);
-		
-		if(!this.hasEnemyTile() && this.attacking.getCode() == 1)
-			System.out.println();
 	}
 	
 	public Rule copy() {

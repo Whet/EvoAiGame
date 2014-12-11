@@ -12,88 +12,32 @@ public class GameSimulator {
 	// 20 turns a second
 	// 1 min of gameplay
 	private static final int MAX_GAME_TURNS = 1200;
-	// 30 secs of gameplay
-//	private static final int MAX_GAME_TURNS = 600;
 	
 	public static int runGame(WorldMap map, Individual individual1, Individual individual2) {
 		
-		// Get average score between both starts
-//		double individual1Score = 0;
-//		double individual2Score = 0;
-		
 		map.setAi(individual1.getAi(), individual2.getAi());
 		
-		runSubGame(map, individual1, individual2);
-		
-//		individual1Score = individual1.getFitness();
-//		individual2Score = individual2.getFitness();
-//		
-//		runSubGame(map, individual2, individual1);
-//		
-//		individual1.setFitness(individual1Score + individual1.getFitness());
-//		individual2.setFitness(individual2Score + individual2.getFitness());
-//		
-//		individual1.setFitness(individual1.getFitness() / 2.0);
-//		individual2.setFitness(individual2.getFitness() / 2.0);
-		
-		
-		// Use different scores for different experiments
-		
-		// Farthest score counts!
-//		if(Math.abs(individual1.getFlagScore() - individual2.getFlagScore()) > Math.abs(individual1.getKillScore() - individual2.getKillScore())) {
-//			if(individual1.getFlagScore() > individual2.getFlagScore()) {
-//				individual1.subjectiveFitness++;
-//				return 1;
-//			}
-//		}
-//		else {
-//			if(individual1.getKillScore() > individual2.getKillScore()) {
-//				individual1.subjectiveFitness++;
-//				return 1;
-//			}
-//		}
-		
-		int score1 = 0;
-		int score2 = 0;
-		
-		if(individual1.getFlagScore() > individual2.getFlagScore()) {
-			score1++;
-		}
-		else if(individual1.getFlagScore() < individual2.getFlagScore()) {
-			score2++;
-		}
-		
-		if(individual1.getKillScore() > individual2.getKillScore()) {
-			score1++;
-		}
-		else if(individual1.getKillScore() < individual2.getKillScore()) {
-			score2++;
-		}
-		
+		int subGameOutcome = runSubGame(map, individual1, individual2);
+
 		individual1.resetScoring();
 		individual2.resetScoring();
 		
-		if(score1 > score2)
-			individual1.subjectiveFitness++;
+		individual1.subjectiveFitness += subGameOutcome;
 		
 		return 0;
 	}
 
-	private static void runSubGame(WorldMap map, Individual individual1, Individual individual2) {
+	private static int runSubGame(WorldMap map, Individual individual1, Individual individual2) {
 		Ai ai1 = individual1.getAi();
 		Ai ai2 = individual2.getAi();
 		
 		Point start1 = map.getStart1();
-		ai1.setX(start1.x);
-		ai1.setY(start1.y);
-		ai1.setRotation(Math.PI / 2);
-		ai1.setRecharge(0);
+		ai1.setSpawn(start1, Math.PI / 2);
+		ai1.respawn();
 		
 		Point start2 = map.getStart2();
-		ai2.setX(start2.x);
-		ai2.setY(start2.y);
-		ai2.setRotation(-Math.PI / 2);
-		ai2.setRecharge(0);
+		ai2.setSpawn(start2, -Math.PI / 2);
+		ai2.respawn();
 		
 		int ai1FlagCaptures = 0;
 		int ai2FlagCaptures = 0;
@@ -101,11 +45,14 @@ public class GameSimulator {
 		ai1.setHasFlag(false);
 		ai2.setHasFlag(false);
 		
-		int ai1Frags = 0;
-		int ai2Frags = 0;
+		int ai1DamageGiven = 0;
+		int ai2DamageGiven = 0;
 		
-		int ai1Shots = 0;
-		int ai2Shots = 0;
+		int ai1DamageTaken = 0;
+		int ai2DamageTaken = 0;
+		
+		int ai1InaccuracyPenalty = 0;
+		int ai2InaccuracyPenalty = 0;
 		
 		int timer = 0;
 		
@@ -136,14 +83,13 @@ public class GameSimulator {
 				ai1FlagCaptures++;
 			}
 			
-			if(ai1.isAttacking() && ai1.getRecharge() == 0)
-				ai1Shots++;
+			if(!ai1.isOnTarget(ai2) && ai1.isAttacking() && ai1.getRecharge() == 0)
+				ai1InaccuracyPenalty++;
 			
-			if(ai1.successfulAttack(ai2)) {
-				ai1Frags++;
-				ai2.setX(start2.x);
-				ai2.setY(start2.y);
-				ai2.setHasFlag(false);
+			if(ai1.attack(ai2)) {
+				ai1DamageGiven += ai1.getDamage();
+				ai2DamageTaken += ai1.getDamage();
+				ai2.hit(ai1.getDamage());
 			}
 
 			// Ai 2 fitness
@@ -161,25 +107,53 @@ public class GameSimulator {
 				ai2FlagCaptures++;
 			}
 			
-			if(ai2.isAttacking() && ai2.getRecharge() == 0)
-				ai2Shots++;
+			if(!ai2.isOnTarget(ai1) && ai2.isAttacking() && ai2.getRecharge() == 0)
+				ai2InaccuracyPenalty++;
 			
-			if(ai2.successfulAttack(ai1)) {
-				ai2Frags++;
-				ai1.setX(start1.x);
-				ai1.setY(start1.y);
-				ai1.setHasFlag(false);
+			if(ai2.attack(ai1)) {
+				ai2DamageGiven += ai2.getDamage();
+				ai1DamageTaken += ai2.getDamage();
+				ai1.hit(ai2.getDamage());
 			}
 			
 		}
 		
 		individual1.addFlagScore(ai1FlagCaptures);
-		individual1.addFrags(ai1Frags);
-		individual1.addShots(ai1Shots);
+		int ai1DamageScore = ai1DamageGiven - ai1DamageTaken/2 - ai1InaccuracyPenalty/2;
+		individual1.addCombatScore(ai1DamageScore);
+		individual1.addShots(ai1InaccuracyPenalty);
 		
 		individual2.addFlagScore(ai2FlagCaptures);
-		individual2.addFrags(ai2Frags);
-		individual2.addShots(ai2Shots);
+		int ai2DamageScore = ai2DamageGiven - ai2DamageTaken/2 - ai2InaccuracyPenalty/2;
+		individual2.addCombatScore(ai2DamageScore);
+		individual2.addShots(ai2InaccuracyPenalty);
+		
+		return scoreCalculation(ai1FlagCaptures, ai1DamageScore, ai2FlagCaptures, ai2DamageScore);
+	}
+
+	private static int scoreCalculation(int ai1FlagCaptures, int ai1DamageScore, int ai2FlagCaptures, int ai2DamageScore) {
+		
+		int score1 = 0;
+		int score2 = 0;
+		
+		if(ai1FlagCaptures > ai2FlagCaptures) {
+			score1++;
+		}
+		else if(ai1FlagCaptures < ai2FlagCaptures) {
+			score2++;
+		}
+		
+		if(ai1DamageScore > ai2DamageScore) {
+			score1++;
+		}
+		else if(ai1DamageScore < ai2DamageScore) {
+			score2++;
+		}
+		
+		if(score1 > score2)
+			return 1;
+		
+		return 0;
 	}
 
 }
