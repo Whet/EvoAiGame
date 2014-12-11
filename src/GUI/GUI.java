@@ -13,6 +13,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -32,8 +35,10 @@ public class GUI extends JFrame {
 	private BufferStrategy bufferS;
 	private Graphics2D dBuffer;
 	
-	public boolean drawGrid = true;
+	public boolean drawGrid = false;
 
+	private List<Bullet> bullets;
+	
 	public GUI(int generation, Ai ai1, Ai ai2, WorldMap map) {
 		
 		this.setTitle("BATTLE OF THE CHAMPIONS GENERATION " + generation);
@@ -85,10 +90,11 @@ public class GUI extends JFrame {
 					ai1.setHasFlag(false);
 				}
 				
+				if(ai1.isAttacking() && ai1.getRecharge() == 0)
+					createBullet(ai1.getX() * DRAW_SCALE, ai1.getY() * DRAW_SCALE, ai1.getRotation());
 				
-				if(ai1.successfulAttack(ai2)) {
-					ai2.setX(GUI.this.getMap().getStart2().x);
-					ai2.setY(GUI.this.getMap().getStart2().y);
+				if(ai1.attack(ai2)) {
+					ai2.hit(ai1.getDamage());
 				}
 				
 				distance = Maths.getDistance(ai2.getX(), ai2.getY(), getMap().getStart1().x, getMap().getStart1().y);
@@ -100,26 +106,26 @@ public class GUI extends JFrame {
 					ai2.setHasFlag(false);
 				}
 				
-				if(ai2.successfulAttack(ai1)) {
-					ai1.setX(GUI.this.getMap().getStart1().x);
-					ai1.setY(GUI.this.getMap().getStart1().y);
+				if(ai2.isAttacking() && ai2.getRecharge() == 0)
+					createBullet(ai2.getX() * DRAW_SCALE, ai2.getY() * DRAW_SCALE, ai2.getRotation());
+				
+				if(ai2.attack(ai1)) {
+					ai1.hit(ai2.getDamage());
 				}
 			}
 		});
 		
 		aiTimer.start();
+		
+		this.bullets = new ArrayList<Bullet>();
 	}
 
 	public void reset() {
-		ai1.setX(map.getStart1().x);
-		ai1.setY(map.getStart1().y);
-		ai1.setRotation(Math.PI / 2);
-		ai1.setRecharge(0);
+		ai1.setSpawn(map.getStart1() , Math.PI / 2);
+		ai1.respawn();
 		
-		ai2.setX(map.getStart2().x);
-		ai2.setY(map.getStart2().y);
-		ai2.setRotation(-Math.PI/2);
-		ai2.setRecharge(0);
+		ai2.setSpawn(map.getStart2(), -Math.PI/2);
+		ai2.respawn();
 	}
 	
 	protected WorldMap getMap() {
@@ -152,12 +158,28 @@ public class GUI extends JFrame {
 		drawAiView(dBuffer, ai1, Color.red);
 		drawAiView(dBuffer, ai2, Color.blue);
 		
-		drawScores(g);
+		drawScores(dBuffer);
+		
+		drawBullets(dBuffer);
 		
 		bufferS.show();
 
 		g.dispose();
 		dBuffer.dispose();
+		
+		tickBullets();
+	}
+
+	private void drawBullets(Graphics g) {
+		g.setColor(Color.white);
+		
+		Iterator<Bullet> iterator = this.bullets.iterator();
+		
+		while(iterator.hasNext()) {
+			Bullet next = iterator.next();
+			g.drawLine(next.location.x, next.location.y, next.location.x + next.xDelta, next.location.y + next.yDelta);
+		}
+		
 	}
 
 	private void drawScores(Graphics g) {
@@ -218,17 +240,28 @@ public class GUI extends JFrame {
 		}
 		
 		g.setColor(colour);
-		
 		g.fillOval((int)xAi - 5, (int)yAi - 5, 10, 10);
 
-
+		if(ai.hasFlag())
+			drawFlag(g, ai, colour);
+		
 		if(ai.getRecharge() != 0) {
 			g.setColor(Color.yellow);
 		}
 		
 		drawFOV(g, ai);
+		drawHealthbar(g, ai);
 	}
 	
+	private void drawHealthbar(Graphics2D g, Ai ai) {
+		g.setColor(Color.black);
+		g.fillRect((int)ai.getX()*DRAW_SCALE - 10, (int)ai.getY()*DRAW_SCALE - 5, 20, 3);
+		
+		g.setColor(Color.green);
+		if(ai.getHealth() > 0)
+		g.fillRect((int)ai.getX()*DRAW_SCALE - 10, (int)ai.getY()*DRAW_SCALE - 5, 20 * (Ai.MAX_HEALTH / ai.getHealth()), 3);
+	}
+
 	private void drawFOV(Graphics2D g, Ai ai) {
 		g.drawLine((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE,
 				   (int)(ai.getX()*DRAW_SCALE + FOV_ARC_LENGTH * Math.cos(ai.getRotation() + Math.toRadians(Ai.ATTACK_FOV) * 0.5)),
@@ -237,6 +270,12 @@ public class GUI extends JFrame {
 		g.drawLine((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE,
 				   (int)(ai.getX()*DRAW_SCALE + FOV_ARC_LENGTH * Math.cos(ai.getRotation() - Math.toRadians(Ai.ATTACK_FOV) * 0.5)),
 				   (int)(ai.getY()*DRAW_SCALE + FOV_ARC_LENGTH * Math.sin(ai.getRotation() - Math.toRadians(Ai.ATTACK_FOV) * 0.5)));
+	}
+	
+	private void drawFlag(Graphics2D g, Ai ai, Color flagColour) {
+		g.setColor(flagColour);
+		g.fillRect((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE, 1, 5);
+		g.fillRect((int)ai.getX()*DRAW_SCALE, (int)ai.getY()*DRAW_SCALE - 5, 4, 4);
 	}
 
 	private void drawMap(Graphics2D g) {
@@ -266,6 +305,46 @@ public class GUI extends JFrame {
 		g.setColor(Color.blue);
 		g.fillRect((int)(map.getStart2().x * DRAW_SCALE - (2.5 * DRAW_SCALE)), (int)(map.getStart2().y * DRAW_SCALE - (2.5 * DRAW_SCALE)), 5 * DRAW_SCALE, 5 * DRAW_SCALE);
 		g.setComposite(GraphicsFunctions.makeComposite(1f));
+	}
+	
+	private void createBullet(double x, double y, double rotation) {
+		this.bullets.add(new Bullet(new Point((int)x, (int)y), rotation));
+	}
+	
+	private void tickBullets() {
+		Iterator<Bullet> iterator = this.bullets.iterator();
+		
+		while(iterator.hasNext()) {
+			Bullet next = iterator.next();
+			
+			next.tick();
+			if(next.life < 0)
+				iterator.remove();
+		}
+	}
+	
+	private static class Bullet {
+		
+		private Point location;
+		public double speed, life;
+		private int xDelta, yDelta;
+		
+		public Bullet(Point location, Double angle) {
+			this.speed = 15;
+			this.life = 5;
+			
+			this.location = new Point(location);
+			
+			xDelta = (int) (Math.cos(angle) * speed);
+			yDelta = (int) (Math.sin(angle) * speed);
+			
+		}
+		
+		public void tick() {
+			this.location.translate(xDelta, yDelta);
+			this.life--;
+		}
+		
 	}
 
 }
