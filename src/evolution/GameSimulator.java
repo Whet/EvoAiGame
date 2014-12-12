@@ -119,12 +119,12 @@ public class GameSimulator {
 		}
 		
 		individual1.addFlagScore(ai1FlagCaptures);
-		int ai1DamageScore = ai1DamageGiven - ai1DamageTaken/2 - ai1InaccuracyPenalty/2;
+		int ai1DamageScore = ai1DamageGiven - ai1DamageTaken/2 - ai1InaccuracyPenalty;
 		individual1.addCombatScore(ai1DamageScore);
 		individual1.addShots(ai1InaccuracyPenalty);
 		
 		individual2.addFlagScore(ai2FlagCaptures);
-		int ai2DamageScore = ai2DamageGiven - ai2DamageTaken/2 - ai2InaccuracyPenalty/2;
+		int ai2DamageScore = ai2DamageGiven - ai2DamageTaken/2 - ai2InaccuracyPenalty;
 		individual2.addCombatScore(ai2DamageScore);
 		individual2.addShots(ai2InaccuracyPenalty);
 		

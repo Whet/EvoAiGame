@@ -24,11 +24,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 100;
-	private static final int POPULATION_SIZE = 30;
+	private static final int GENERATIONS = 200;
+	private static final int POPULATION_SIZE = 50;
 	private static final int CARRY_OVER_POPULATION = 5;
 	
-	private static final int S = 20;
+	private static final int S = 30;
 	
 	public static void main(String[] args) {
 		new Evolver();
