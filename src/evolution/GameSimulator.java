@@ -24,7 +24,7 @@ public class GameSimulator {
 		
 		individual1.subjectiveFitness += subGameOutcome;
 		
-		return 0;
+		return subGameOutcome;
 	}
 
 	private static int runSubGame(WorldMap map, Individual individual1, Individual individual2) {
@@ -119,12 +119,12 @@ public class GameSimulator {
 		}
 		
 		individual1.addFlagScore(ai1FlagCaptures);
-		int ai1DamageScore = ai1DamageGiven * 2 - ai1DamageTaken/2 - ai1InaccuracyPenalty/2;
+		int ai1DamageScore = ai1DamageGiven * 2 - ai1DamageTaken/2;
 		individual1.addCombatScore(ai1DamageScore);
 		individual1.addShots(ai1InaccuracyPenalty);
 		
 		individual2.addFlagScore(ai2FlagCaptures);
-		int ai2DamageScore = ai2DamageGiven * 2 - ai2DamageTaken/2 - ai2InaccuracyPenalty/2;
+		int ai2DamageScore = ai2DamageGiven * 2 - ai2DamageTaken/2;
 		individual2.addCombatScore(ai2DamageScore);
 		individual2.addShots(ai2InaccuracyPenalty);
 		

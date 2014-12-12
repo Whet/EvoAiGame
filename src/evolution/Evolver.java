@@ -24,7 +24,7 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 1000;
+	private static final int GENERATIONS = 100;
 	private static final int POPULATION_SIZE = 30;
 	private static final int CARRY_OVER_POPULATION = 5;
 	
@@ -249,12 +249,12 @@ public class Evolver {
 			}
 			mean2 /= population2.size();
 			
-			System.out.println("Mean rules used population 1 " + mean1 + "   Mean rules used population 2 " + mean2);
+			System.out.println("Mean rules used population1 " + mean1 + "   Mean rules used population2 " + mean2);
 			
 			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-			if(i % 100 == 0)
+			if(i % 10 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
@@ -316,8 +316,8 @@ public class Evolver {
 		private Ai ai;
 		private double fitness;
 		public int subjectiveFitness;
-		private int flagCaps;
-		private int frags;
+		private int flagScore;
+		private float combatScore;
 		private int recordFrags;
 		private int recordFlagCaps;
 		private int gamesPlayed;
@@ -345,7 +345,7 @@ public class Evolver {
 			this.name = randomName(random) + random.nextLong();
 			this.ai = ai;
 			this.fitness = 0;
-			this.frags = 0;
+			this.combatScore = 0;
 			this.recordFlagCaps = 0;
 			this.recordFrags = 0;
 			this.recordShots = 0;
@@ -381,7 +381,7 @@ public class Evolver {
 			
 			this.name = randomName(random) + random.nextLong();
 			this.fitness = 0;
-			this.frags = 0;
+			this.combatScore = 0;
 			this.recordFlagCaps = 0;
 			this.recordFrags = 0;
 			this.recordShots = 0;
@@ -392,11 +392,11 @@ public class Evolver {
 		}
 
 		public int getFlagScore() {
-			return flagCaps;
+			return flagScore;
 		}
 
 		public void addFlagScore(int flagCaps) {
-			this.flagCaps += flagCaps;
+			this.flagScore += flagCaps;
 		}
 		
 		@Override
@@ -445,21 +445,21 @@ public class Evolver {
 			this.fitness = fitness;
 		}
 
-		public void addCombatScore(int frags) {
-			this.frags += frags;
+		public void addCombatScore(float combatScore) {
+			this.combatScore += combatScore;
 		}
 
-		public int getCombatScore() {
-			return this.frags;
+		public float getCombatScore() {
+			return this.combatScore;
 		}
 
 		public void resetScoring() {
-			this.recordFrags += this.frags;
-			this.recordFlagCaps += this.flagCaps;
+			this.recordFrags += this.combatScore;
+			this.recordFlagCaps += this.flagScore;
 			this.recordShots += this.shots;
 			
-			this.frags = 0;
-			this.flagCaps = 0;
+			this.combatScore = 0;
+			this.flagScore = 0;
 			this.shots = 0;
 			this.gamesPlayed ++;
 		}
@@ -486,10 +486,10 @@ public class Evolver {
 
 		public double getKillScore() {
 			
-			if(this.frags == 0)
+			if(this.combatScore == 0)
 				return -0;
 			
-			return this.frags;
+			return this.combatScore;
 		}
 		
 	}

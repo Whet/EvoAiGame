@@ -14,7 +14,7 @@ import utils.Maths;
 public class Ai {
 
 	public static final int ATTACK_FOV = 90;
-	public static final double ATTACK_RANGE = 10;
+	public static final double ATTACK_RANGE = 18;
 	
 	private static final int ATTACK_RECHARGE = 3;
 	public static final int MAX_HEALTH = 100;
