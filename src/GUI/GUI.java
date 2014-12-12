@@ -90,8 +90,10 @@ public class GUI extends JFrame {
 					ai1.setHasFlag(false);
 				}
 				
-				if(ai1.isAttacking() && ai1.getRecharge() == 0)
+				if(ai1.isAttacking() && ai1.getRecharge() == 0 && !ai1.isOnTarget(ai2))
 					createBullet(ai1.getX() * DRAW_SCALE, ai1.getY() * DRAW_SCALE, ai1.getRotation());
+				else if(ai1.isAttacking() && ai1.getRecharge() == 0 && ai1.isOnTarget(ai2))
+					createBullet(ai1.getX() * DRAW_SCALE, ai1.getY() * DRAW_SCALE, Maths.getRads(ai1.getX(), ai1.getY(), ai2.getX(), ai2.getY()));
 				
 				if(ai1.attack(ai2)) {
 					ai2.hit(ai1.getDamage());
@@ -106,8 +108,10 @@ public class GUI extends JFrame {
 					ai2.setHasFlag(false);
 				}
 				
-				if(ai2.isAttacking() && ai2.getRecharge() == 0)
+				if(ai2.isAttacking() && ai2.getRecharge() == 0 && !ai2.isOnTarget(ai1))
 					createBullet(ai2.getX() * DRAW_SCALE, ai2.getY() * DRAW_SCALE, ai2.getRotation());
+				else if(ai2.isAttacking() && ai2.getRecharge() == 0 && ai1.isOnTarget(ai1))
+					createBullet(ai2.getX() * DRAW_SCALE, ai2.getY() * DRAW_SCALE, Maths.getRads(ai2.getX(), ai2.getY(), ai1.getX(), ai1.getY()));
 				
 				if(ai2.attack(ai1)) {
 					ai1.hit(ai2.getDamage());
@@ -259,7 +263,7 @@ public class GUI extends JFrame {
 		
 		g.setColor(Color.green);
 		if(ai.getHealth() > 0)
-		g.fillRect((int)ai.getX()*DRAW_SCALE - 10, (int)ai.getY()*DRAW_SCALE - 5, 20 * (Ai.MAX_HEALTH / ai.getHealth()), 3);
+		g.fillRect((int)ai.getX()*DRAW_SCALE - 10, (int)ai.getY()*DRAW_SCALE - 5,(int)( 20 * (ai.getHealth() / (float)Ai.MAX_HEALTH)), 3);
 	}
 
 	private void drawFOV(Graphics2D g, Ai ai) {
