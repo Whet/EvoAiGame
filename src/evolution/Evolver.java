@@ -24,11 +24,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 200;
+	private static final int GENERATIONS = 100;
 	private static final int POPULATION_SIZE = 50;
 	private static final int CARRY_OVER_POPULATION = 5;
 	
-	private static final int S = 30;
+	private static final int S = 10;
 	
 	public static void main(String[] args) {
 		new Evolver();
@@ -317,7 +317,7 @@ public class Evolver {
 		private double fitness;
 		public int subjectiveFitness;
 		private int flagScore;
-		private float combatScore;
+		private double combatScore;
 		private int recordFrags;
 		private int recordFlagCaps;
 		private int gamesPlayed;
@@ -445,11 +445,11 @@ public class Evolver {
 			this.fitness = fitness;
 		}
 
-		public void addCombatScore(float combatScore) {
+		public void addCombatScore(double combatScore) {
 			this.combatScore += combatScore;
 		}
 
-		public float getCombatScore() {
+		public double getCombatScore() {
 			return this.combatScore;
 		}
 

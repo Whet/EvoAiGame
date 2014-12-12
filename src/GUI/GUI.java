@@ -181,7 +181,7 @@ public class GUI extends JFrame {
 		
 		while(iterator.hasNext()) {
 			Bullet next = iterator.next();
-			g.drawLine(next.location.x, next.location.y, next.location.x + next.xDelta, next.location.y + next.yDelta);
+			g.drawLine(next.location.x, next.location.y, next.location.x + next.xDelta/4, next.location.y + next.yDelta/4);
 		}
 		
 	}
@@ -334,8 +334,8 @@ public class GUI extends JFrame {
 		private int xDelta, yDelta;
 		
 		public Bullet(Point location, Double angle) {
-			this.speed = 15;
-			this.life = 5;
+			this.speed = 40;
+			this.life = 3;
 			
 			this.location = new Point(location);
 			

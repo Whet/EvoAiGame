@@ -5,6 +5,7 @@ import gameworld.WorldMap;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -49,6 +50,28 @@ public class Ai {
 		this.recharge = 0;
 		
 		this.rules = new HashSet<>();
+		this.ruleUseCount = new HashMap<>();
+		
+		this.isAttacking = false;
+		this.hasFlag = false;
+	}
+	
+	public Ai(WorldMap map, List<Rule> rules) {
+		
+		this.map = map;
+		
+		this.x = 0;
+		this.y = 0;
+		this.rotation = 0;
+		this.move = 0;
+		this.recharge = 0;
+		
+		this.rules = new HashSet<>();
+		
+		for(Rule rule:rules) {
+			this.rules.add(rule);
+		}
+		
 		this.ruleUseCount = new HashMap<>();
 		
 		this.isAttacking = false;

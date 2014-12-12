@@ -1,5 +1,6 @@
 package ai;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import utils.Maths;
@@ -7,7 +8,7 @@ import utils.Maths;
 import gameworld.WorldMap;
 import gameworld.WorldStates;
 
-public class Rule {
+public class Rule implements Serializable {
 	
 	private static final double MOVEMENT_MUTATION = 0.1;
 	private static final double ROTATION_MUTATION = 0.1;
