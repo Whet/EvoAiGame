@@ -121,11 +121,13 @@ public class GameSimulator {
 		individual1.addFlagScore(ai1FlagCaptures);
 		double ai1DamageScore = ai1DamageGiven - ai1DamageTaken/2 - ai1InaccuracyPenalty*1.2;
 		individual1.addCombatScore(ai1DamageScore);
+		individual1.addDamageDealt(ai1DamageGiven);
 		individual1.addShots(ai1InaccuracyPenalty);
 		
 		individual2.addFlagScore(ai2FlagCaptures);
 		double ai2DamageScore = ai2DamageGiven - ai2DamageTaken/2 - ai2InaccuracyPenalty*1.2;
 		individual2.addCombatScore(ai2DamageScore);
+		individual2.addDamageDealt(ai2DamageGiven);
 		individual2.addShots(ai2InaccuracyPenalty);
 		
 		return scoreCalculation(ai1FlagCaptures, ai1DamageScore, ai2FlagCaptures, ai2DamageScore);

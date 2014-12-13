@@ -1,10 +1,12 @@
 package evolution;
 
 import gameworld.WorldMap;
+import graph.ChampionGraph;
 import graph.Graph;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -18,20 +20,22 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import ruleIO.LoadSave;
 import GUI.GUI;
 import ai.Ai;
 import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 100;
+	private static final int GENERATIONS = 200;
 	private static final int POPULATION_SIZE = 50;
-	private static final int CARRY_OVER_POPULATION = 5;
+	private static final int CARRY_OVER_POPULATION = 10;
 	
-	private static final int S = 10;
+	private static final int S = 30;
 	
 	public static void main(String[] args) {
-		new Evolver();
+		File saveFolder = new File(args[0]);
+		new Evolver(saveFolder);
 	}
 	
 	private PriorityQueue<Individual> population1;
@@ -40,13 +44,13 @@ public class Evolver {
 	private Random random;
 	private Graph graph;
 	
-	private Individual[] champions1;
-	private Individual[] champions2;
+	private List<Individual> champions1;
+	private List<Individual> champions2;
 	
-	public Evolver() {
+	public Evolver(File saveFolder) {
 		
-		champions1 = new Individual[GENERATIONS];
-		champions2 = new Individual[GENERATIONS];
+		champions1 = new ArrayList<>();
+		champions2 = new ArrayList<>();
 		
 		graph = new Graph();
 		
@@ -56,58 +60,42 @@ public class Evolver {
 		
 		runEvolution();
 		
-		openGUI(GENERATIONS, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
+		ChampionGraph.showChampionGraph(fightChampions(champions1), fightChampions(champions2));
 		
-		fightChampions();
+		saveChampions(saveFolder);
+		
+		openGUI(GENERATIONS, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 	}
 	
-	private void fightChampions() {
-		Individual champion1 = champions1[GENERATIONS - 1];
-		Individual champion2 = champions2[GENERATIONS - 1];
-		
-		int winCount = 0;
-		int matchCount = 0;
-		
-		System.out.println("Champion 1");
-		for(int i = 0; i < champions1.length - 1; i++) {
-			matchCount++;
-			if(GameSimulator.runGame(map, champion1, champions1[i]) == 1)
-				winCount++;
-			else
-				System.out.println("Champion 1 lost against generation " + i);
+	private void saveChampions(File saveFolder) {
+		for(int i = 0; i < champions1.size(); i++) {
+			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions1/champion" + i), champions1.get(i).getAiCopy());
 		}
-		for(int i = 0; i < champions2.length; i++) {
-			matchCount++;
-			if(GameSimulator.runGame(map, champion1, champions2[i]) == 1)
-				winCount++;
-			else
-				System.out.println("Champion 1 lost against population 2 generation " + i);
+		for(int i = 0; i < champions2.size(); i++) {
+			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions2/champion" + i), champions2.get(i).getAiCopy());
 		}
+	}
+
+	private List<Integer> fightChampions(List<Individual> champions) {
 		
-		System.out.println("Champion 1 total wins: " + winCount + " out of " + matchCount);
+		List<Integer> wins = new ArrayList<>();
 		
-		
-		winCount = 0;
-		matchCount = 0;
-		
-		System.out.println("Champion 2");
-		for(int i = 0; i < champions2.length - 1; i++) {
-			matchCount++;
-			if(GameSimulator.runGame(map, champion2, champions2[i]) == 1)
-				winCount++;
-			else
-				System.out.println("Champion 2 lost against generation " + i);
-		}
-		for(int i = 0; i < champions1.length; i++) {
-			matchCount++;
-			if(GameSimulator.runGame(map, champion2, champions1[i]) == 1)
-				winCount++;
-			else
-				System.out.println("Champion 2 lost against population 1 generation " + i);
+		for(Individual champion:champions) {
+			
+			Integer winCount = 0;
+			
+			for(int i = 0; i < champions.size(); i++) {
+				if(champion == champions.get(i))
+					continue;
+				
+				if(GameSimulator.runGame(map, champion, champions1.get(i)) == 1)
+					winCount++;
+			}
+			
+			wins.add(winCount);
 		}
 		
-		System.out.println("Champion 2 total wins: " + winCount + " out of " + matchCount);
-		
+		return wins;
 	}
 
 	private void runCompetition(Individual ind1, PriorityQueue<Individual> competitionPop) {
@@ -153,14 +141,14 @@ public class Evolver {
 		System.out.println("Generated Initial Population");
 		
 		System.out.println("BATTLE REPORT 0");
-		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
-		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
+		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageCombatScore());
+		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageCombatScore());
 
 		graph.updateData(population1, population2, 0);
 		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 
-		champions1[0] = population1.peek();
-		champions2[0] = population2.peek();
+		champions1.add(population1.peek());
+		champions2.add(population2.peek());
 		
 		// Continue battle for generations to come!!!
 		for(int i = 1; i < GENERATIONS; i++) {
@@ -226,11 +214,11 @@ public class Evolver {
 			}
 			
 			System.out.println("BATTLE REPORT " + i);
-			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageFragScore());
-			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageFragScore());
+			System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageCombatScore());
+			System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageCombatScore());
 			
-			champions1[i] = population1.peek();
-			champions2[i] = population2.peek();
+			champions1.add(population1.peek());
+			champions2.add(population2.peek());
 			
 			int mean1 = 0;
 			for(Individual individual:population1) {
@@ -254,7 +242,7 @@ public class Evolver {
 			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-			if(i % 10 == 0)
+			if(i % 50 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
@@ -318,11 +306,12 @@ public class Evolver {
 		public int subjectiveFitness;
 		private int flagScore;
 		private double combatScore;
-		private int recordFrags;
+		private int recordCombatScore;
 		private int recordFlagCaps;
 		private int gamesPlayed;
 		private int shots;
 		private int recordShots;
+		private int recordDamageDealt;
 		
 		private String randomName(Random random) {
 			switch(random.nextInt(5)) {
@@ -347,10 +336,11 @@ public class Evolver {
 			this.fitness = 0;
 			this.combatScore = 0;
 			this.recordFlagCaps = 0;
-			this.recordFrags = 0;
+			this.recordCombatScore = 0;
 			this.recordShots = 0;
 			this.gamesPlayed = 0;
 			this.shots = 0;
+			this.recordDamageDealt = 0;
 		}
 		
 		// Indivdual with crossover
@@ -383,10 +373,11 @@ public class Evolver {
 			this.fitness = 0;
 			this.combatScore = 0;
 			this.recordFlagCaps = 0;
-			this.recordFrags = 0;
+			this.recordCombatScore = 0;
 			this.recordShots = 0;
 			this.gamesPlayed = 0;
 			this.shots = 0;
+			this.recordDamageDealt = 0;
 			
 			this.mutate(random);
 		}
@@ -454,7 +445,7 @@ public class Evolver {
 		}
 
 		public void resetScoring() {
-			this.recordFrags += this.combatScore;
+			this.recordCombatScore += this.combatScore;
 			this.recordFlagCaps += this.flagScore;
 			this.recordShots += this.shots;
 			
@@ -468,12 +459,24 @@ public class Evolver {
 			return this.recordFlagCaps / (double)this.gamesPlayed;
 		}
 		
-		public double getAverageFragScore() {
+		public double getAverageCombatScore() {
 			
-			if(this.recordFrags == 0)
+			if(this.recordCombatScore == 0)
 				return -0;
 			
-			return this.recordFrags/ (double)this.gamesPlayed;
+			return this.recordCombatScore/ (double)this.gamesPlayed;
+		}
+		
+		public double getAverageDamageDealt() {
+			
+			if(this.recordDamageDealt == 0)
+				return -0;
+			
+			return this.recordDamageDealt/ (double)this.gamesPlayed;
+		}
+		
+		public void addDamageDealt(int damageGiven) {
+			this.recordDamageDealt += damageGiven;
 		}
 
 		public void addShots(int shots) {
@@ -491,7 +494,7 @@ public class Evolver {
 			
 			return this.combatScore;
 		}
-		
+
 	}
 	
 	private static class GeneticQueue extends PriorityQueue<Individual> {
@@ -505,6 +508,12 @@ public class Evolver {
 					if(i1.subjectiveFitness > i2.subjectiveFitness)
 						return -1;
 					else if(i2.subjectiveFitness > i1.subjectiveFitness)
+						return 1;
+					
+					// Then return based on damage
+					if(i1.getAverageCombatScore() > i2.getAverageCombatScore())
+						return -1;
+					else if(i2.getAverageCombatScore() > i1.getAverageCombatScore())
 						return 1;
 					
 					return 0;

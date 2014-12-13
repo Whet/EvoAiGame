@@ -1,6 +1,5 @@
 package graph;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +12,6 @@ import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.ChartBuilder;
 import com.xeiam.xchart.StyleManager.ChartTheme;
 import com.xeiam.xchart.StyleManager.ChartType;
-import com.xeiam.xchart.StyleManager.LegendPosition;
 import com.xeiam.xchart.XChartPanel;
 
 import evolution.Evolver.Individual;
@@ -59,7 +57,7 @@ public class Graph {
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
-		chart.setChartTitle("Population 1 Damage Score");
+		chart.setChartTitle("Population 1 Damage Given");
 		
 		killGraph1 = new XChartPanel(chart);
 		
@@ -85,7 +83,7 @@ public class Graph {
 		
 		chart.setXAxisTitle("Generations");
 		chart.setYAxisTitle("Score");
-		chart.setChartTitle("Population 2 Damage Score");
+		chart.setChartTitle("Population 2 Damage Given");
 		
 		killGraph2 = new XChartPanel(chart);
 		
@@ -134,7 +132,7 @@ public class Graph {
 		while(iterator.hasNext()) {
 			Individual next = iterator.next();
 			captures1.add(next.getAverageFlagScore());
-			frags1.add(next.getAverageFragScore());
+			frags1.add(next.getAverageDamageDealt());
 		}
 		
 		captureScore1.addAll(captures1);
@@ -147,7 +145,7 @@ public class Graph {
 		while(iterator.hasNext()) {
 			Individual next = iterator.next();
 			captures2.add(next.getAverageFlagScore());
-			frags2.add(next.getAverageFragScore());
+			frags2.add(next.getAverageDamageDealt());
 		}
 		
 		captureScore2.addAll(captures2);
