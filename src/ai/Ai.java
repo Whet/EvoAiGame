@@ -22,6 +22,8 @@ public class Ai {
 	
 	private static final int DAMAGE = 25;
 	
+	private static final int NUMBER_OF_RULES = 100;
+	
 	private Set<Rule> rules;
 	public Map<Rule, Integer> ruleUseCount;
 	
@@ -210,7 +212,7 @@ public class Ai {
 		
 		Set<Rule> rules = new HashSet<>();
 		
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < NUMBER_OF_RULES; i++) {
 			Rule rule = new Rule();
 			
 			rule.initialMutation(random);

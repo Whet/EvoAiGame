@@ -2,7 +2,6 @@ package evolution;
 
 import gameworld.WorldMap;
 import graph.ChampionGraph;
-import graph.Graph;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,11 +26,11 @@ import ai.Rule;
 
 public class Evolver {
 
-	private static final int GENERATIONS = 200;
+	private static final int GENERATIONS = 300;
 	private static final int POPULATION_SIZE = 50;
-	private static final int CARRY_OVER_POPULATION = 10;
+	private static final int CARRY_OVER_POPULATION = 20;
 	
-	private static final int S = 30;
+	private static final int S = 50;
 	
 	public static void main(String[] args) {
 		File saveFolder = new File(args[0]);
@@ -42,7 +41,7 @@ public class Evolver {
 	private PriorityQueue<Individual> population2;
 	private WorldMap map;
 	private Random random;
-	private Graph graph;
+//	private Graph graph;
 	
 	private List<Individual> champions1;
 	private List<Individual> champions2;
@@ -52,29 +51,29 @@ public class Evolver {
 		champions1 = new ArrayList<>();
 		champions2 = new ArrayList<>();
 		
-		graph = new Graph();
+//		graph = new Graph();
 		
 		random = new Random();
 		
 		map = new WorldMap();
 		
-		runEvolution();
+		runEvolution(saveFolder);
 		
 		ChampionGraph.showChampionGraph(fightChampions(champions1), fightChampions(champions2));
 		
-		saveChampions(saveFolder);
+//		saveChampions(saveFolder);
 		
 		openGUI(GENERATIONS, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 	}
 	
-	private void saveChampions(File saveFolder) {
-		for(int i = 0; i < champions1.size(); i++) {
-			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions1/champion" + i), champions1.get(i).getAiCopy());
-		}
-		for(int i = 0; i < champions2.size(); i++) {
-			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions2/champion" + i), champions2.get(i).getAiCopy());
-		}
-	}
+//	private void saveChampions(File saveFolder) {
+//		for(int i = 0; i < champions1.size(); i++) {
+//			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions1/champion" + i), champions1.get(i).getAiCopy());
+//		}
+//		for(int i = 0; i < champions2.size(); i++) {
+//			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions2/champion" + i), champions2.get(i).getAiCopy());
+//		}
+//	}
 
 	private List<Integer> fightChampions(List<Individual> champions) {
 		
@@ -107,7 +106,7 @@ public class Evolver {
 		}
 	}
 
-	private void runEvolution() {
+	private void runEvolution(File saveFolder) {
 		
 		Individual[] currentPopulation1 = new Individual[POPULATION_SIZE];
 		Individual[] currentPopulation2 = new Individual[POPULATION_SIZE];
@@ -144,7 +143,7 @@ public class Evolver {
 		System.out.println("POP1: BEST SOLDIER " + population1.peek() + " VICTORIES " + population1.peek().subjectiveFitness + " flag caps " + population1.peek().getAverageFlagScore() + " frags " + population1.peek().getAverageCombatScore());
 		System.out.println("POP2: BEST SOLDIER " + population2.peek() + " VICTORIES " + population2.peek().subjectiveFitness + " flag caps " + population2.peek().getAverageFlagScore() + " frags " + population2.peek().getAverageCombatScore());
 
-		graph.updateData(population1, population2, 0);
+//		graph.updateData(population1, population2, 0);
 		openGUI(0, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 
 		champions1.add(population1.peek());
@@ -219,6 +218,8 @@ public class Evolver {
 			
 			champions1.add(population1.peek());
 			champions2.add(population2.peek());
+			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions1/champion" + i), population1.peek().getAiCopy());
+			LoadSave.saveAi(new File(saveFolder.getAbsoluteFile() + "/champions2/champion" + i), population2.peek().getAiCopy());
 			
 			int mean1 = 0;
 			for(Individual individual:population1) {
@@ -239,10 +240,10 @@ public class Evolver {
 			
 			System.out.println("Mean rules used population1 " + mean1 + "   Mean rules used population2 " + mean2);
 			
-			graph.updateData(population1, population2, i);
+//			graph.updateData(population1, population2, i);
 			
 			// Show cool ppl
-			if(i % 50 == 0)
+			if(i >= 200 && i % 50 == 0)
 				openGUI(i, population1.peek().getAiCopy(), population2.peek().getAiCopy(), new WorldMap());
 		}
 	}
