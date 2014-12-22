@@ -34,7 +34,7 @@ public class LoadSave {
 		}
 	}
 
-	public static Ai loadAi(File file, Ai ai, WorldMap map) {
+	public static Ai loadAi(File file, WorldMap map) {
 		try {
 			InputStream buffer = new BufferedInputStream(new FileInputStream(file));
 			ObjectInput input = new ObjectInputStream (buffer);

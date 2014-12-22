@@ -13,12 +13,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+
+import ruleIO.LoadSave;
 
 import utils.GraphicsFunctions;
 import utils.Maths;
@@ -26,6 +30,21 @@ import ai.Ai;
 
 public class GUI extends JFrame {
 
+	public static void main(String[] args) {
+		
+		JFileChooser chooser = new JFileChooser();
+		chooser.showOpenDialog(null);
+		File champion1 = chooser.getSelectedFile();
+		
+		chooser = new JFileChooser();
+		chooser.showOpenDialog(null);
+		File champion2 = chooser.getSelectedFile();
+		
+		WorldMap map = new WorldMap();
+		
+		new GUI(0, LoadSave.loadAi(champion1, map), LoadSave.loadAi(champion2, map), map);
+	}
+	
 	private static final int DRAW_SCALE = 5;
 	private static final int FOV_ARC_LENGTH = (int)(Ai.ATTACK_RANGE * DRAW_SCALE);
 	
