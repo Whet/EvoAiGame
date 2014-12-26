@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import ruleIO.LoadSave;
@@ -42,7 +43,27 @@ public class GUI extends JFrame {
 		
 		WorldMap map = new WorldMap();
 		
-		new GUI(0, LoadSave.loadAi(champion1, map), LoadSave.loadAi(champion2, map), map);
+		final GUI frame = new GUI(0, LoadSave.loadAi(champion1, map), LoadSave.loadAi(champion2, map), map);
+		
+		final Timer timer = new Timer(100, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.repaint();
+			}
+		});
+		
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				frame.setSize(500, 600);
+				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frame.createBuffers();
+				timer.start();
+			}
+		});
 	}
 	
 	private static final int DRAW_SCALE = 5;

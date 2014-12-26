@@ -30,7 +30,7 @@ public class Evolver {
 	private static final int POPULATION_SIZE = 50;
 	private static final int CARRY_OVER_POPULATION = 20;
 	
-	private static final int S = 50;
+	private static final int S = 10;
 	
 	public static void main(String[] args) {
 		File saveFolder = new File(args[0]);
